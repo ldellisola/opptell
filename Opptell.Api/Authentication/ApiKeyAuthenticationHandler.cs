@@ -8,13 +8,15 @@ namespace Opptell.Api.Authentication;
 public class ApiKeyAuthenticationOptions : AuthenticationSchemeOptions
 {
     public const string DefaultScheme = "ApiKey";
-    public string ApiKey { get; set; } = string.Empty;
 }
 
 public class ApiKeyAuthenticationHandler(IOptionsMonitor<ApiKeyAuthenticationOptions> options, 
-    ILoggerFactory logger, UrlEncoder encoder) : AuthenticationHandler<ApiKeyAuthenticationOptions>(options, logger, encoder)
+    ILoggerFactory logger, UrlEncoder encoder, IConfiguration configuration) : AuthenticationHandler<ApiKeyAuthenticationOptions>(options, logger, encoder)
 {
     private const string ApiKeyHeaderName = "X-API-Key";
+    private readonly string _adminToken = Environment.GetEnvironmentVariable("ADMIN_TOKEN") 
+        ?? configuration["Authentication:AdminToken"]
+        ?? throw new InvalidOperationException("ADMIN_TOKEN environment variable or Authentication:AdminToken not configured");
 
     protected override Task<AuthenticateResult> HandleAuthenticateAsync()
     {
@@ -30,7 +32,7 @@ public class ApiKeyAuthenticationHandler(IOptionsMonitor<ApiKeyAuthenticationOpt
             return Task.FromResult(AuthenticateResult.NoResult());
         }
 
-        if (Options.ApiKey.Equals(providedApiKey))
+        if (_adminToken.Equals(providedApiKey))
         {
             var claims = new[]
             {

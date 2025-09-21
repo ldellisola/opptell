@@ -6,11 +6,7 @@ builder.Services.AddFastEndpoints();
 
 builder.Services.AddAuthentication(ApiKeyAuthenticationOptions.DefaultScheme)
     .AddScheme<ApiKeyAuthenticationOptions, ApiKeyAuthenticationHandler>(
-        ApiKeyAuthenticationOptions.DefaultScheme, options =>
-        {
-            options.ApiKey = builder.Configuration["Authentication:ApiKey"]
-                ?? throw new InvalidOperationException("API Key not configured");
-        });
+        ApiKeyAuthenticationOptions.DefaultScheme, _ => { });
 
 builder.Services.AddAuthorization();
 

@@ -5,8 +5,9 @@ namespace Opptell.Api.Features.AddRecord;
 
 public class AddRecordEndpoint(IConfiguration configuration) : Endpoint<AddRecordRequest>
 {
-    private readonly string _connectionString = configuration.GetConnectionString("DefaultConnection") 
-        ?? throw new InvalidOperationException("Connection string 'DefaultConnection' not found.");
+    private readonly string _connectionString = Environment.GetEnvironmentVariable("CONNECTION_STRING") 
+        ?? configuration.GetConnectionString("DefaultConnection")
+        ?? throw new InvalidOperationException("CONNECTION_STRING environment variable or DefaultConnection not configured");
 
     public override void Configure()
     {

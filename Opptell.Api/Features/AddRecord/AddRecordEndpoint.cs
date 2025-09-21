@@ -3,7 +3,7 @@ using Npgsql;
 
 namespace Opptell.Api.Features.AddRecord;
 
-public class AddRecordEndpoint(IConfiguration configuration) : Endpoint<AddRecordRequest>
+public class AddRecordEndpoint(IConfiguration configuration) : EndpointWithoutRequest
 {
     private readonly string _connectionString = Environment.GetEnvironmentVariable("CONNECTION_STRING") 
         ?? configuration.GetConnectionString("DefaultConnection")
@@ -15,13 +15,16 @@ public class AddRecordEndpoint(IConfiguration configuration) : Endpoint<AddRecor
         AuthSchemes("ApiKey");
     }
 
-    public override async Task HandleAsync(AddRecordRequest req, CancellationToken ct)
+    public override async Task HandleAsync(CancellationToken ct)
     {
+        var table = Route<string>("table");
+        var value = Route<double>("value");
+        
         await using var connection = new NpgsqlConnection(_connectionString);
         await connection.OpenAsync(ct);
 
-        await EnsureTableExistsAsync(connection, req.Table, ct);
-        await InsertRecordAsync(connection, req.Table, req.Value, ct);
+        await EnsureTableExistsAsync(connection, table, ct);
+        await InsertRecordAsync(connection, table, value, ct);
             
         await Send.ResponseAsync("", 201, ct);
     }

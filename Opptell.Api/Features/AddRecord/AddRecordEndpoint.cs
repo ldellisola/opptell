@@ -11,7 +11,7 @@ public class AddRecordEndpoint(IConfiguration configuration) : Endpoint<AddRecor
     public override void Configure()
     {
         Post("/{table}/{value}");
-        AllowAnonymous();
+        AuthSchemes("ApiKey");
     }
 
     public override async Task HandleAsync(AddRecordRequest req, CancellationToken ct)

@@ -18,7 +18,7 @@ public class AddRecordEndpoint(IConfiguration configuration) : EndpointWithoutRe
     public override async Task HandleAsync(CancellationToken ct)
     {
         var table = Route<string>("table");
-        var value = Route<double>("value");
+        var value = double.Parse(Route<string>("value").Replace(",","."));
         
         Logger.LogInformation("Recording {value} for table {table}", value, table);
         

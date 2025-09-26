@@ -20,13 +20,15 @@ public class AddRecordEndpoint(IConfiguration configuration) : EndpointWithoutRe
         var table = Route<string>("table");
         var value = Route<double>("value");
         
+        Logger.LogInformation("Recording {value} for table {table}", value, table);
+        
         await using var connection = new NpgsqlConnection(_connectionString);
         await connection.OpenAsync(ct);
 
         await EnsureTableExistsAsync(connection, table, ct);
         await InsertRecordAsync(connection, table, value, ct);
-            
-        await Send.ResponseAsync("", 201, ct);
+
+        await Send.NoContentAsync(ct);
     }
 
     private static async Task EnsureTableExistsAsync(NpgsqlConnection connection, string tableName, CancellationToken cancellationToken)
